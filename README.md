@@ -1,2 +1,1 @@
-# university-is
-University information system
+# University information system
