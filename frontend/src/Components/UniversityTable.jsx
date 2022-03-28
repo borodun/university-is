@@ -1,16 +1,8 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import {useEffect} from 'react';
 import Box from '@mui/material/Box';
 import {DataGrid, GridToolbar} from '@mui/x-data-grid';
-import {useDemoData} from '@mui/x-data-grid-generator';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import {styled} from '@mui/material/styles';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import axios from "axios";
 
 const AntDesignStyledDataGrid = styled(DataGrid)(({theme}) => ({
@@ -147,148 +139,54 @@ const StyledBox = styled(Box)(({theme}) => ({
     },
 }));
 
-function SettingsPanel(props) {
-    const {onApply, onLoad, size} = props;
-    const [sizeState, setSize] = React.useState(size);
-    const [selectedPaginationValue, setSelectedPaginationValue] = React.useState(-1);
+function toCapitalizedWords(name) {
+    const words = name.match(/[A-Za-z][a-z]*/g) || [];
 
-    const handleSizeChange = React.useCallback((event) => {
-        setSize(Number(event.target.value));
-    }, []);
-
-    const handlePaginationChange = React.useCallback((event) => {
-        setSelectedPaginationValue(event.target.value);
-    }, []);
-
-    const handleApplyChanges = React.useCallback(() => {
-        onApply({
-            size: sizeState,
-            pagesize: selectedPaginationValue,
-        });
-    }, [sizeState, selectedPaginationValue, onApply]);
-
-    const handleLoadData = React.useCallback(() => {
-        onLoad();
-    }, [onLoad]);
-
-    return (
-        <FormGroup className="MuiFormGroup-options" row>
-            <FormControl variant="standard">
-                <InputLabel>Rows</InputLabel>
-                <Select value={sizeState} onChange={handleSizeChange}>
-                    <MenuItem value={100}>100</MenuItem>
-                    <MenuItem value={1000}>{Number(1000).toLocaleString()}</MenuItem>
-                    <MenuItem value={10000}>{Number(10000).toLocaleString()}</MenuItem>
-                    <MenuItem value={100000}>{Number(100000).toLocaleString()}</MenuItem>
-                </Select>
-            </FormControl>
-            <FormControl variant="standard">
-                <InputLabel>Page Size</InputLabel>
-                <Select value={selectedPaginationValue} onChange={handlePaginationChange}>
-                    <MenuItem value={-1}>off</MenuItem>
-                    <MenuItem value={0}>auto</MenuItem>
-                    <MenuItem value={25}>25</MenuItem>
-                    <MenuItem value={100}>100</MenuItem>
-                    <MenuItem value={1000}>{Number(1000).toLocaleString()}</MenuItem>
-                </Select>
-            </FormControl>
-            <Button
-                size="small"
-                variant="outlined"
-                color="primary"
-                onClick={handleApplyChanges}
-            >
-                <KeyboardArrowRightIcon fontSize="small"/> Apply
-            </Button>
-            <Button
-                size="small"
-                variant="outlined"
-                color="primary"
-                onClick={handleLoadData}
-            >
-                <KeyboardArrowRightIcon fontSize="small"/> Load data
-            </Button>
-        </FormGroup>
-    );
+    return words.map(capitalize).join(" ");
 }
 
-SettingsPanel.propTypes = {
-    onApply: PropTypes.func.isRequired,
-    size: PropTypes.number.isRequired,
-};
+function capitalize(word) {
+    return word.charAt(0).toUpperCase() + word.substring(1);
+}
 
 export default function UniversityTable() {
-    const [size, setSize] = React.useState(100);
-    let {loading, data, setRowLength, loadNewData} = useDemoData({
-        dataSet: 'Commodity',
-        rowLength: size,
-        maxColumns: 40,
-        editable: true,
-    });
+    const [select, setSelection] = React.useState([]);
+    const [loading, setLoading] = React.useState(true)
+
+    const [data, setData] = React.useState({
+        rows: [{id: 1}],
+        columns: [{field: "id", headerName: "id"}]
+    })
 
     const getPersons = () => {
         console.log(process.env.REACT_APP_API_URL)
-        console.log(data)
+        setLoading(true)
         axios.get(`/persons`)
             .then(res => {
                 let rows = res.data
                 let columns = []
-                for(const key in rows[0]){
-                    let obj = {"field": key, "headerName": key}
+                for (const key in rows[0]) {
+                    let obj = {field: key, headerName: toCapitalizedWords(key)}
                     if (key === "id") {
                         obj.hide = true
                     }
                     columns.push(obj);
                 }
-                console.log(columns)
-                data = {columns, rows}
-            })
+                setData({columns, rows})
+            }).catch((e) => {
+            console.log(e)
+        })
+        setLoading(false)
     }
 
-    const [pagination, setPagination] = React.useState({
-        pagination: false,
-        autoPageSize: false,
-        pageSize: undefined,
-    });
-
-    const handleApplyClick = (settings) => {
-        if (size !== settings.size) {
-            setSize(settings.size);
-        }
-
-        if (size !== settings.size) {
-            setRowLength(settings.size);
-            loadNewData();
-        }
-
-        const newPaginationSettings = {
-            pagination: settings.pagesize !== -1,
-            autoPageSize: settings.pagesize === 0,
-            pageSize: settings.pagesize > 0 ? settings.pagesize : undefined,
-        };
-
-        setPagination((currentPaginationSettings) => {
-            if (
-                currentPaginationSettings.pagination === newPaginationSettings.pagination &&
-                currentPaginationSettings.autoPageSize ===
-                newPaginationSettings.autoPageSize &&
-                currentPaginationSettings.pageSize === newPaginationSettings.pageSize
-            ) {
-                return currentPaginationSettings;
-            }
-            return newPaginationSettings;
-        });
-    };
+    useEffect(() => {
+        getPersons()
+    }, [])
 
     const DataGridComponent = AntDesignStyledDataGrid;
 
     return (
         <StyledBox>
-            <SettingsPanel
-                onApply={handleApplyClick}
-                onLoad={getPersons}
-                size={size}
-            />
             <DataGridComponent
                 {...data}
                 components={{
@@ -298,11 +196,12 @@ export default function UniversityTable() {
                 checkboxSelection
                 disableSelectionOnClick
                 rowThreshold={0}
-                initialState={{
-                    ...data.initialState,
-                    pinnedColumns: {left: ['__check__', 'desk']},
+                pagination={true}
+                autoPageSize={true}
+                pageSize={undefined}
+                onSelectionModelChange={(newSelection) => {
+                    setSelection(newSelection)
                 }}
-                {...pagination}
             />
         </StyledBox>
     );
