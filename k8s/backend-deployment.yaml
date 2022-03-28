@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: university-backend-deployment
+  labels:
+    end: university-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      end: university-backend
+  template:
+    metadata:
+      labels:
+        end: university-backend
+    spec:
+      containers:
+      - name: university-backend
+        image: borodun/university-backend
+        ports:
+        - containerPort: 8080

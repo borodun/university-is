@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: university-frontend-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    end: university-frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

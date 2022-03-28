@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: univerisity-ingress
+  labels: 
+    app: univerisity-is
+  annotations:
+    cert-manager.io/issuer: gitlab-issuer
+    kubernetes.io/ingress.provider: nginx
+spec:
+  tls:
+  - hosts:
+    - university.borodun.works
+    secretName: univerisity-tls-secret
+  ingressClassName: gitlab-nginx
+  rules:
+    - host: university.borodun.works
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: university-frontend-cluster-ip
+                port:
+                  number: 80
+    - host: university.borodun.works
+      http:
+        paths:
+          - path: /api/v1/
+            pathType: Prefix
+            backend:
+              service:
+                name: university-backend-cluster-ip
+                port:
+                  number: 8080

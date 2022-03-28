@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: university-frontend-deployment
+  labels:
+    end: university-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      end: university-frontend
+  template:
+    metadata:
+      labels:
+        end: university-frontend
+    spec:
+      containers:
+      - name: university-frontend
+        image: borodun/university-frontend
+        ports:
+        - containerPort: 80
+        env:
+        - name: API_BASE_URL
+          value: https://university.borodun.works/api/v1/
