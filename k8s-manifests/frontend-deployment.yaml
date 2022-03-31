@@ -16,9 +16,8 @@ spec:
     spec:
       containers:
       - name: university-frontend
-        image: borodun/university-frontend
+        image: registry.borodun.works/root/university/frontend
         ports:
         - containerPort: 80
-        env:
-        - name: API_BASE_URL
-          value: https://university.borodun.works/api/v1/
+      imagePullSecrets:
+        - name: regcred

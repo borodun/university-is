@@ -16,6 +16,8 @@ spec:
     spec:
       containers:
       - name: university-backend
-        image: borodun/university-backend
+        image: registry.borodun.works/root/university/backend
         ports:
         - containerPort: 8080
+      imagePullSecrets:
+        - name: regcred
