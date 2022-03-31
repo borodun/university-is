@@ -150,7 +150,6 @@ function capitalize(word) {
 }
 
 export default function UniversityTable() {
-    const [select, setSelection] = React.useState([]);
     const [loading, setLoading] = React.useState(true)
 
     const [data, setData] = React.useState({
@@ -199,9 +198,6 @@ export default function UniversityTable() {
                 pagination={true}
                 autoPageSize={true}
                 pageSize={undefined}
-                onSelectionModelChange={(newSelection) => {
-                    setSelection(newSelection)
-                }}
             />
         </StyledBox>
     );
