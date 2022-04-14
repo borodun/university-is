@@ -1,7 +1,9 @@
-package ru.nsu.ccfit.universityis.backend.persons;
+package ru.nsu.ccfit.universityis.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.ccfit.universityis.backend.entities.Person;
+import ru.nsu.ccfit.universityis.backend.repositories.PersonRepository;
 import ru.nsu.ccfit.universityis.backend.types.GenderTypes;
 
 import javax.transaction.Transactional;
@@ -10,40 +12,40 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class PersonsService {
+public class PersonService {
 
-    private final PersonsRepository personsRepository;
+    private final PersonRepository personRepository;
 
     @Autowired
-    public PersonsService(PersonsRepository personsRepository) {
-        this.personsRepository = personsRepository;
+    public PersonService(PersonRepository personRepository) {
+        this.personRepository = personRepository;
     }
 
-    public List<Persons> getPersons() {
-        return personsRepository.findAll();
+    public List<Person> getPersons() {
+        return personRepository.findAll();
     }
 
-    public void addPerson(Persons person) {
-        personsRepository.save(person);
+    public void addPerson(Person person) {
+        personRepository.save(person);
     }
 
-    public void deletePerson(Long id) {
-        boolean exists = personsRepository.existsById(id);
+    public void deletePerson(Integer id) {
+        boolean exists = personRepository.existsById(id);
         if (!exists) {
             throw new IllegalStateException("no person with id " + id);
         }
-        personsRepository.deleteById(id);
+        personRepository.deleteById(id);
     }
 
     @Transactional
-    public void updatePerson(Long id,
+    public void updatePerson(Integer id,
                              String firstName,
                              String secondName,
                              String lastName,
                              GenderTypes gender,
                              LocalDate dob,
                              String kids) {
-        Persons person = personsRepository.findById(id).orElseThrow(() -> new IllegalStateException("no person with id " + id));
+        Person person = personRepository.findById(id).orElseThrow(() -> new IllegalStateException("no person with id " + id));
 
         if (firstName != null && firstName.length() > 0 && !Objects.equals(person.getFirstName(), firstName)) {
             person.setFirstName(firstName);
