@@ -68,6 +68,7 @@ pipeline {
         stage('Deploy to k8s') {
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'CONFIG')]) {
+					sh "kubectl apply -f k8s-manifests/ingress.yaml --kubeconfig=\"$CONFIG\" -n gitlab"
                     sh "kubectl set image deployment/university-backend-deployment university-backend=registry.borodun.works/root/university/backend:${env.BUILD_NUMBER} --kubeconfig=\"$CONFIG\" -n gitlab"
                     sh "kubectl set image deployment/university-frontend-deployment university-frontend=registry.borodun.works/root/university/frontend:${env.BUILD_NUMBER} --kubeconfig=\"$CONFIG\" -n gitlab"
                 }
