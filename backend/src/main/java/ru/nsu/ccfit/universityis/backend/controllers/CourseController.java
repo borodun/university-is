@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping(path = "api/v1/courses")
 public class CourseController {
 
-    private final CourseService courseService;
+    private final CourseService service;
 
     @Autowired
-    public CourseController(CourseService courseService) {
-        this.courseService = courseService;
+    public CourseController(CourseService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Course> getDisciples() {
-        return courseService.getCourses();
+    public List<Course> getAll() {
+        return service.getAll();
     }
 }

@@ -10,14 +10,14 @@ import java.util.List;
 @Service
 public class CurriculumService {
 
-    private final CurriculumRepository curriculumRepository;
+    private final CurriculumRepository repository;
 
     @Autowired
-    public CurriculumService(CurriculumRepository curriculumRepository) {
-        this.curriculumRepository = curriculumRepository;
+    public CurriculumService(CurriculumRepository repository) {
+        this.repository = repository;
     }
 
-    public List<Curriculum> getCurriculum() {
-        return curriculumRepository.findAll();
+    public List<Curriculum> getAll() {
+        return repository.findAll();
     }
 }

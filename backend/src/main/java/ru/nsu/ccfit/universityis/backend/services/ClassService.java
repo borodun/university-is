@@ -2,22 +2,22 @@ package ru.nsu.ccfit.universityis.backend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nsu.ccfit.universityis.backend.entities.Pass;
-import ru.nsu.ccfit.universityis.backend.repositories.PassRepository;
+import ru.nsu.ccfit.universityis.backend.entities.Class;
+import ru.nsu.ccfit.universityis.backend.repositories.ClassRepository;
 
 import java.util.List;
 
 @Service
-public class PassService {
+public class ClassService {
 
-    private final PassRepository repository;
+    private final ClassRepository repository;
 
     @Autowired
-    public PassService(PassRepository repository) {
+    public ClassService(ClassRepository repository) {
         this.repository = repository;
     }
 
-    public List<Pass> getAll() {
+    public List<Class> getAll() {
         return repository.findAll();
     }
 }

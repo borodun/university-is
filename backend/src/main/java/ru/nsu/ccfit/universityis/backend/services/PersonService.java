@@ -14,27 +14,27 @@ import java.util.Objects;
 @Service
 public class PersonService {
 
-    private final PersonRepository personRepository;
+    private final PersonRepository repository;
 
     @Autowired
-    public PersonService(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public PersonService(PersonRepository repository) {
+        this.repository = repository;
     }
 
-    public List<Person> getPersons() {
-        return personRepository.findAll();
+    public List<Person> getAll() {
+        return repository.findAll();
     }
 
     public void addPerson(Person person) {
-        personRepository.save(person);
+        repository.save(person);
     }
 
     public void deletePerson(Integer id) {
-        boolean exists = personRepository.existsById(id);
+        boolean exists = repository.existsById(id);
         if (!exists) {
             throw new IllegalStateException("no person with id " + id);
         }
-        personRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class PersonService {
                              GenderTypes gender,
                              LocalDate dob,
                              String kids) {
-        Person person = personRepository.findById(id).orElseThrow(() -> new IllegalStateException("no person with id " + id));
+        Person person = repository.findById(id).orElseThrow(() -> new IllegalStateException("no person with id " + id));
 
         if (firstName != null && firstName.length() > 0 && !Objects.equals(person.getFirstName(), firstName)) {
             person.setFirstName(firstName);

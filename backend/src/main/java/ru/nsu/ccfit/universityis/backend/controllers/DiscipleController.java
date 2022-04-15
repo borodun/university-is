@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping(path = "api/v1/disciples")
 public class DiscipleController {
 
-    private final DiscipleService discipleService;
+    private final DiscipleService service;
 
     @Autowired
-    public DiscipleController(DiscipleService discipleService) {
-        this.discipleService = discipleService;
+    public DiscipleController(DiscipleService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Disciple> getDisciples() {
-        return discipleService.getDisciples();
+    public List<Disciple> getAll() {
+        return service.getAll();
     }
 }

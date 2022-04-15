@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping(path = "api/v1/sessions")
 public class SessionController {
 
-    private final SessionService sessionService;
+    private final SessionService service;
 
     @Autowired
-    public SessionController(SessionService sessionService) {
-        this.sessionService = sessionService;
+    public SessionController(SessionService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Session> getDisciples() {
-        return sessionService.getSessions();
+    public List<Session> getAll() {
+        return service.getAll();
     }
 }

@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping(path = "api/v1/passes")
 public class PassController {
 
-    private final PassService passService;
+    private final PassService service;
 
     @Autowired
-    public PassController(PassService passService) {
-        this.passService = passService;
+    public PassController(PassService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Pass> getPasses() {
-        return passService.getPasses();
+    public List<Pass> getAll() {
+        return service.getAll();
     }
 }

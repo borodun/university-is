@@ -4,24 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nsu.ccfit.universityis.backend.entities.Curriculum;
-import ru.nsu.ccfit.universityis.backend.services.CurriculumService;
+import ru.nsu.ccfit.universityis.backend.entities.Group;
+import ru.nsu.ccfit.universityis.backend.services.GroupService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/curriculum")
-public class CurriculumController {
+@RequestMapping(path = "api/v1/groups")
+public class GroupController {
 
-    private final CurriculumService service;
+    private final GroupService service;
 
     @Autowired
-    public CurriculumController(CurriculumService service) {
+    public GroupController(GroupService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<Curriculum> getAll() {
+    public List<Group> getAll() {
         return service.getAll();
     }
 }

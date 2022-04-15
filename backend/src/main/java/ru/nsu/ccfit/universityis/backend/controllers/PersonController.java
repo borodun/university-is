@@ -13,26 +13,26 @@ import java.util.List;
 @RequestMapping(path = "api/v1/persons")
 public class PersonController {
 
-    private final PersonService personService;
+    private final PersonService service;
 
     @Autowired
-    public PersonController(PersonService personService) {
-        this.personService = personService;
+    public PersonController(PersonService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Person> getPersons() {
-        return personService.getPersons();
+    public List<Person> getAll() {
+        return service.getAll();
     }
 
     @PostMapping
     public void addPerson(@RequestBody Person person) {
-        personService.addPerson(person);
+        service.addPerson(person);
     }
 
     @DeleteMapping(path = "{personId}")
     public void deletePerson(@PathVariable("personId") Integer id) {
-        personService.deletePerson(id);
+        service.deletePerson(id);
     }
 
     @PutMapping(path = "{personId}")
@@ -43,6 +43,6 @@ public class PersonController {
                              @RequestParam(required = false) GenderTypes gender,
                              @RequestParam(required = false) LocalDate dob,
                              @RequestParam(required = false) String kids) {
-        personService.updatePerson(id, firstName, secondName, lastName, gender, dob, kids);
+        service.updatePerson(id, firstName, secondName, lastName, gender, dob, kids);
     }
 }

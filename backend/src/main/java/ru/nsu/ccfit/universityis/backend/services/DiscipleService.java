@@ -10,14 +10,14 @@ import java.util.List;
 @Service
 public class DiscipleService {
 
-    private final DiscipleRepository discipleRepository;
+    private final DiscipleRepository repository;
 
     @Autowired
-    public DiscipleService(DiscipleRepository discipleRepository) {
-        this.discipleRepository = discipleRepository;
+    public DiscipleService(DiscipleRepository repository) {
+        this.repository = repository;
     }
 
-    public List<Disciple> getDisciples() {
-        return discipleRepository.findAll();
+    public List<Disciple> getAll() {
+        return repository.findAll();
     }
 }

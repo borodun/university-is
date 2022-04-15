@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping(path = "api/v1/exams")
 public class ExamController {
 
-    private final ExamService examService;
+    private final ExamService service;
 
     @Autowired
-    public ExamController(ExamService examService) {
-        this.examService = examService;
+    public ExamController(ExamService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Exam> getExams() {
-        return examService.getExams();
+    public List<Exam> getAll() {
+        return service.getAll();
     }
 }
