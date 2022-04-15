@@ -34,3 +34,10 @@ spec:
                 name: university-backend-cluster-ip
                 port:
                   number: 8080
+          - path: /v3/api-docs
+            pathType: Prefix
+            backend:
+              service:
+                name: university-backend-cluster-ip
+                port:
+                  number: 8080
