@@ -149,7 +149,7 @@ function capitalize(word) {
     return word.charAt(0).toUpperCase() + word.substring(1);
 }
 
-export default function UniversityTable() {
+export default function UniversityTable(props) {
     const [loading, setLoading] = React.useState(true)
 
     const [data, setData] = React.useState({
@@ -157,19 +157,26 @@ export default function UniversityTable() {
         columns: [{field: "id", headerName: "id"}]
     })
 
-    const getPersons = () => {
-        console.log(process.env.REACT_APP_API_URL)
+    const getTable = (table) => {
+        console.log(table)
         setLoading(true)
-        axios.get(`/persons`)
+        axios.get(`/`+table)
             .then(res => {
                 let rows = res.data
                 let columns = []
+                let rawColumns = []
                 for (const key in rows[0]) {
                     let obj = {field: key, headerName: toCapitalizedWords(key)}
                     if (key === "id") {
                         obj.hide = true
                     }
                     columns.push(obj);
+                    rawColumns.push(key);
+                }
+                if (!rawColumns.includes("id")){
+                    for (const key in rows) {
+                        rows[key].id = key
+                    }
                 }
                 setData({columns, rows})
             }).catch((e) => {
@@ -179,14 +186,12 @@ export default function UniversityTable() {
     }
 
     useEffect(() => {
-        getPersons()
-    }, [])
-
-    const DataGridComponent = AntDesignStyledDataGrid;
+        getTable(props.table.toLowerCase().replace(" ", "-"))
+    }, [props.table])
 
     return (
         <StyledBox>
-            <DataGridComponent
+            <AntDesignStyledDataGrid
                 {...data}
                 components={{
                     Toolbar: GridToolbar,

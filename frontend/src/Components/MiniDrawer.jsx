@@ -9,15 +9,30 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import UniversityTable from "./UniversityTable";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+
 import PersonIcon from '@mui/icons-material/Person';
 import SchoolIcon from '@mui/icons-material/School';
-import UniversityTable from "./UniversityTable";
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import DateRangeIcon from '@mui/icons-material/DateRange';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CameraIndoorIcon from '@mui/icons-material/CameraIndoor';
+import NoteAltIcon from '@mui/icons-material/NoteAlt';
+import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
+import SubjectIcon from '@mui/icons-material/Subject';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import GppGoodIcon from '@mui/icons-material/GppGood';
+import EventNoteIcon from '@mui/icons-material/EventNote';
+import NumbersIcon from '@mui/icons-material/Numbers';
+import ClassIcon from '@mui/icons-material/Class';
 
 const drawerWidth = 250;
 
@@ -86,17 +101,41 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-function TableIcon(index) {
-    let iconDict = {
-        Persons: <PersonIcon/>,
-        Students: <SchoolIcon/>
-    }
-    return iconDict[index];
-}
-
 export default function MiniDrawer() {
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
+    const [tableName, setTableName] = React.useState('Persons');
+
+    const iconDict = {
+        Persons: <PersonIcon/>,
+        Students: <SchoolIcon/>,
+        Teachers: <SelfImprovementIcon/>,
+        "Study Assignments": <AssignmentIcon/>,
+        Sessions: <DateRangeIcon/>,
+        Passes: <AssignmentTurnedInIcon/>,
+        Groups: <GroupsIcon/>,
+        Faculties: <CameraIndoorIcon/>,
+        Exams: <NoteAltIcon/>,
+        "Exam Assignments": <AssignmentLateIcon/>,
+        Disciple: <SubjectIcon/>,
+        Departments: <MeetingRoomIcon/>,
+        "Defended Degrees": <GppGoodIcon/>,
+        Curriculum: <EventNoteIcon/>,
+        Courses: <NumbersIcon/>,
+        Classes: <ClassIcon/>
+    }
+
+    const getTableNames = () => {
+        let fields = []
+        for (const key in iconDict) {
+            fields.push(key);
+        }
+        return fields
+    }
+
+    const handleTableChange = (name) =>{
+      setTableName(name);
+    };
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -137,14 +176,15 @@ export default function MiniDrawer() {
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Persons', 'Students'].map((text, index) => (
+                    {getTableNames().map((text, index) => (
                         <ListItemButton
                             key={text}
                             sx={{
-                                minHeight: 48,
+                                minHeight: 10,
                                 justifyContent: open ? 'initial' : 'center',
                                 px: 2.5,
                             }}
+                            onClick={() => handleTableChange(text)}
                         >
                             <ListItemIcon
                                 sx={{
@@ -153,7 +193,7 @@ export default function MiniDrawer() {
                                     justifyContent: 'center',
                                 }}
                             >
-                                {TableIcon(text)}
+                                {iconDict[text]}
                             </ListItemIcon>
                             <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
                         </ListItemButton>
@@ -163,7 +203,7 @@ export default function MiniDrawer() {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <UniversityTable/>
+                <UniversityTable table={tableName}/>
             </Box>
         </Box>
     );
