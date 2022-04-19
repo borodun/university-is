@@ -529,17 +529,17 @@ BEGIN
                p.first_name,
                p.last_name,
                p.date_of_birth,
-               extract(year from age(p.date_of_birth))::INTEGER as age,
+               extract(year from age(p.date_of_birth))::INTEGER AS age,
                g.group_number,
                c.course_number,
                f.faculty_name,
                p.kids,
                s.scholarship
         FROM students s
-                 INNER JOIN groups g on s.group_id = g.id
-                 INNER JOIN courses c on c.id = g.course_id
-                 INNER JOIN faculties f on f.id = c.faculty_id
-                 INNER JOIN persons p on p.id = s.id
+                 INNER JOIN groups g ON s.group_id = g.id
+                 INNER JOIN courses c ON c.id = g.course_id
+                 INNER JOIN faculties f ON f.id = c.faculty_id
+                 INNER JOIN persons p ON p.id = s.id
         WHERE ((cardinality(groupList) != 0 AND g.group_number = ANY (groupList)) OR cardinality(groupList) = 0)
           AND ((cardinality(courseList) != 0 AND c.course_number = ANY (courseList)) OR cardinality(courseList) = 0)
           AND ((cardinality(facultyList) != 0 AND f.faculty_name = ANY (facultyList)) OR cardinality(facultyList) = 0)
@@ -752,8 +752,8 @@ CREATE FUNCTION university.find_teacher_groups(disciplelist character varying[],
                 lastname       character varying,
                 departmentname character varying,
                 facultyname    character varying,
-                group_number   integer,
-                course_number  integer,
+                groupnumber    integer,
+                coursenumber   integer,
                 disciple       character varying
             )
     LANGUAGE plpgsql
@@ -771,14 +771,14 @@ BEGIN
                cour.course_number,
                disc.disciple_name
         FROM departments d
-                 INNER JOIN study_assignments sa on d.id = sa.department_id
-                 INNER JOIN disciples disc on disc.id = sa.disciple_id
-                 INNER JOIN classes c on disc.id = c.disciple_id
-                 INNER JOIN teachers t on c.teacher_id = t.id
-                 INNER JOIN faculties f on f.id = d.faculty_id
-                 INNER JOIN groups g on g.id = c.group_id
-                 INNER JOIN courses cour on cour.id = g.course_id
-                 INNER JOIN persons p on p.id = t.id
+                 INNER JOIN study_assignments sa ON d.id = sa.department_id
+                 INNER JOIN disciples disc ON disc.id = sa.disciple_id
+                 INNER JOIN classes c ON disc.id = c.disciple_id
+                 INNER JOIN teachers t ON c.teacher_id = t.id
+                 INNER JOIN faculties f ON f.id = d.faculty_id
+                 INNER JOIN groups g ON g.id = c.group_id
+                 INNER JOIN courses cour ON cour.id = g.course_id
+                 INNER JOIN persons p ON p.id = t.id
         WHERE ((cardinality(groupList) != 0 AND g.group_number = ANY (groupList)) OR cardinality(groupList) = 0)
           AND ((cardinality(courseList) != 0 AND cour.course_number = ANY (courseList)) OR cardinality(courseList) = 0)
           AND ((cardinality(departmentList) != 0 AND d.department_name = ANY (departmentList)) OR
@@ -1005,12 +1005,13 @@ ALTER SEQUENCE university.courses_id_seq OWNED BY university.courses.id;
 
 CREATE TABLE university.curriculum
 (
-    id          integer NOT NULL,
-    disciple_id integer NOT NULL,
-    hours       integer NOT NULL,
-    year        integer NOT NULL,
-    course_id   integer NOT NULL,
-    semester    integer NOT NULL,
+    id          integer                NOT NULL,
+    disciple_id integer                NOT NULL,
+    hours       integer                NOT NULL,
+    year        integer                NOT NULL,
+    course_id   integer                NOT NULL,
+    semester    integer                NOT NULL,
+    class_type  university.class_types NOT NULL,
     CONSTRAINT hours_constraint CHECK ((hours > 0)),
     CONSTRAINT semester_constraint CHECK ((semester > 0)),
     CONSTRAINT year_constraint CHECK ((year > 0))
@@ -1713,68 +1714,68 @@ VALUES (18, 'undergraduate', 4, 5);
 -- Data for Name: curriculum; Type: TABLE DATA; Schema: university; Owner: -
 --
 
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (15, 8, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (8, 4, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (9, 5, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (10, 5, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (11, 6, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (20, 10, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (16, 8, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (17, 9, 16, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (18, 9, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (19, 10, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (4, 2, 24, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (5, 2, 8, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (6, 3, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (7, 4, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (2, 1, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (3, 1, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (12, 6, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (13, 7, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (14, 7, 32, 2022, 1, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (21, 5, 16, 2020, 10, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (22, 6, 16, 2020, 10, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (23, 7, 32, 2020, 15, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (24, 8, 32, 2020, 15, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (25, 9, 8, 2020, 20, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (26, 10, 8, 2020, 20, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (27, 5, 32, 2020, 10, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (28, 6, 32, 2020, 10, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (29, 7, 64, 2020, 15, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (30, 8, 64, 2020, 15, 2);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (31, 9, 8, 2020, 20, 1);
-INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester)
-VALUES (32, 10, 8, 2020, 20, 1);
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (17, 9, 16, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (28, 6, 32, 2020, 10, 1, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (31, 9, 8, 2020, 20, 1, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (29, 7, 64, 2020, 15, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (23, 7, 32, 2020, 15, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (25, 9, 8, 2020, 20, 1, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (24, 8, 32, 2020, 15, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (8, 4, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (5, 2, 8, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (3, 1, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (16, 8, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (26, 10, 8, 2020, 20, 1, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (11, 6, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (9, 5, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (22, 6, 16, 2020, 10, 1, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (21, 5, 16, 2020, 10, 1, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (20, 10, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (18, 9, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (14, 7, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (12, 6, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (10, 5, 32, 2022, 1, 2, 'lection');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (6, 3, 32, 2022, 1, 2, 'laboratory_work');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (15, 8, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (13, 7, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (32, 10, 8, 2020, 20, 1, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (27, 5, 32, 2020, 10, 1, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (4, 2, 24, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (7, 4, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (2, 1, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (19, 10, 32, 2022, 1, 2, 'seminar');
+INSERT INTO university.curriculum (id, disciple_id, hours, year, course_id, semester, class_type)
+VALUES (30, 8, 64, 2020, 15, 2, 'seminar');
 
 
 --
