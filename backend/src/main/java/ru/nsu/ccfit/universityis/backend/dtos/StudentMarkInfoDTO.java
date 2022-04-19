@@ -2,7 +2,7 @@ package ru.nsu.ccfit.universityis.backend.dtos;
 
 import java.time.LocalDate;
 
-public interface StudentDTO {
+public interface StudentMarkInfoDTO {
     Integer getId();
 
     Integer getRecordBookNum();
@@ -13,17 +13,19 @@ public interface StudentDTO {
 
     String getLastName();
 
-    LocalDate getDateOfBirth();
-
-    Integer getAge();
-
     Integer getGroupNumber();
 
     Integer getCourseNumber();
 
     String getFacultyName();
 
-    String getKids();
+    String getDiscipleName();
 
-    Integer getScholarship();
+    String getMark();
+
+    String getTeacherName();
+
+    LocalDate getExamDate();
+
+    Integer getSemester();
 }

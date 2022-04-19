@@ -30,7 +30,7 @@ public class Teacher {
 
     @Enumerated(EnumType.STRING)
     @Type(type = "postgresEnum")
-    @Column(name = "position", nullable = false)
+    @Column(name = "position_type", nullable = false)
     private PositionTypes position;
 
     @Column(name = "scientific_theme")
