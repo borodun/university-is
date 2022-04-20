@@ -30,7 +30,7 @@ export default function StudentQuery(props) {
     const [groupList, setGroupList] = React.useState([])
     const [courseList, setCourseList] = React.useState([])
     const [facultyList, setFacultyList] = React.useState([])
-    const [genderList, setGenderList] = React.useState([])
+    const [genderList, setGenderList] = React.useState('')
     const [yearList, setYearList] = React.useState([1990, 2010])
     const [ageList, setAgeList] = React.useState([18, 30])
     const [kidsCheck, setKidsCheck] = React.useState(-1)
@@ -98,12 +98,12 @@ export default function StudentQuery(props) {
         "Faculty of Economics",
         "Faculty of Mathematics and Mechanics"
     ]
-    const genders = [
-        'male',
-        'female'
-    ]
+
     const values = [-1, 0, 1];
-    const labels = ["doesn't matter", "no", "yes"];
+    const labels = ["Irrelevant", "No", "Yes"];
+
+    const genderValues = ['', 'male', 'female'];
+    const genderLabels = ['Irrelevant', 'Male', 'Female'];
 
     return (
         <Box>
@@ -146,11 +146,13 @@ export default function StudentQuery(props) {
                                         array={faculties}
                                     />
 
-                                    <ChipSelect
+                                    <RadioButtonSelect
+                                        id="genders"
                                         label="Genders"
-                                        list={genderList}
-                                        setList={setGenderList}
-                                        array={genders}
+                                        value={genderList}
+                                        setValue={setGenderList}
+                                        values={genderValues}
+                                        labels={genderLabels}
                                     />
 
                                     <FormLabel id="yearInterval">Year of birth range</FormLabel>
@@ -208,6 +210,7 @@ export default function StudentQuery(props) {
                                         }}
                                         valueLabelDisplay="auto"
                                         getAriaValueText={valuetext}
+                                        disabled={scholarshipCheck <= 0}
                                     />
 
                                     <Button variant="contained" onClick={handleSubmit}>Apply</Button>
