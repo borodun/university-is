@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import "./axios";
-import MiniDrawer from "./Components/MiniDrawer";
+import TopMenu from "./components/TopMenu";
 import {StyledEngineProvider} from "@mui/material/styles";
 
 ReactDOM.render(
     <StyledEngineProvider>
-        <MiniDrawer/>
+        <TopMenu/>
     </StyledEngineProvider>,
     document.getElementById('root')
 );

@@ -1,11 +1,9 @@
 import * as React from 'react';
-import {useEffect} from 'react';
-import Box from '@mui/material/Box';
 import {DataGrid, GridToolbar} from '@mui/x-data-grid';
 import {styled} from '@mui/material/styles';
-import axios from "axios";
+import Box from "@mui/material/Box";
 
-const AntDesignStyledDataGrid = styled(DataGrid)(({theme}) => ({
+const AntStyledDataGrid = styled(DataGrid)(({theme}) => ({
     border: `1px solid ${theme.palette.mode === 'light' ? '#f0f0f0' : '#303030'}`,
     color:
         theme.palette.mode === 'light' ? 'rgba(0,0,0,.85)' : 'rgba(255,255,255,0.85)',
@@ -126,7 +124,7 @@ const AntDesignStyledDataGrid = styled(DataGrid)(({theme}) => ({
 const StyledBox = styled(Box)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
-    height: 800,
+    height: 750,
     width: '100%',
     '& .MuiFormGroup-options': {
         alignItems: 'center',
@@ -139,64 +137,14 @@ const StyledBox = styled(Box)(({theme}) => ({
     },
 }));
 
-function toCapitalizedWords(name) {
-    const words = name.match(/[A-Za-z][a-z]*/g) || [];
-
-    return words.map(capitalize).join(" ");
-}
-
-function capitalize(word) {
-    return word.charAt(0).toUpperCase() + word.substring(1);
-}
-
-export default function UniversityTable(props) {
-    const [loading, setLoading] = React.useState(true)
-
-    const [data, setData] = React.useState({
-        rows: [{id: 1}],
-        columns: [{field: "id", headerName: "id"}]
-    })
-
-    const getTable = (table) => {
-        console.log(table)
-        setLoading(true)
-        axios.get(`/`+table)
-            .then(res => {
-                let rows = res.data
-                let columns = []
-                let rawColumns = []
-                for (const key in rows[0]) {
-                    let obj = {field: key, headerName: toCapitalizedWords(key)}
-                    if (key === "id") {
-                        obj.hide = true
-                    }
-                    columns.push(obj);
-                    rawColumns.push(key);
-                }
-                if (!rawColumns.includes("id")){
-                    for (const key in rows) {
-                        rows[key].id = key
-                    }
-                }
-                setData({columns, rows})
-            }).catch((e) => {
-            console.log(e)
-        })
-        setLoading(false)
-    }
-
-    useEffect(() => {
-        getTable(props.table.toLowerCase().replace(" ", "-"))
-    }, [props.table])
-
+export default function AntGrid(props) {
     return (
         <StyledBox>
-            <AntDesignStyledDataGrid
-                {...data}
+            <AntStyledDataGrid
+                {...props.data}
                 components={{
                     Toolbar: GridToolbar,
                 }}
-                loading={loading}
                 checkboxSelection
                 disableSelectionOnClick
                 rowThreshold={0}
@@ -204,6 +152,5 @@ export default function UniversityTable(props) {
                 autoPageSize={true}
                 pageSize={undefined}
             />
-        </StyledBox>
-    );
+        </StyledBox>);
 }

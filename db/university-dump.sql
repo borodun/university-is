@@ -555,9 +555,9 @@ BEGIN
           AND ((scholarshipCheck != -1 AND
                 (scholarshipCheck = 1 AND s.scholarship IS NOT NULL OR
                  scholarshipCheck = 0 AND s.scholarship IS NULL)) OR scholarshipCheck = -1)
-          AND ((cardinality(scholarshipInterval) != 0 AND
-                s.scholarship BETWEEN array_min(scholarshipInterval) AND array_max(scholarshipInterval)) OR
-               cardinality(scholarshipInterval) = 0)
+          AND ((cardinality(scholarshipInterval) != 0 AND scholarshipCheck = 1 AND
+                s.scholarship BETWEEN array_min(scholarshipInterval) AND array_max(scholarshipInterval)
+            OR scholarshipCheck != 1) OR cardinality(scholarshipInterval) = 0)
         ORDER BY p.id;
 END;
 $$;
