@@ -36,7 +36,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Integer> {
                                       @Param("articleList") String articleList,
                                       @Param("articleDateInterval") String articleDateInterval);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM find_articles(" +
+    @Query(nativeQuery = true, value = "SELECT * FROM find_teacher_articles(" +
             "CAST(:departmentList AS VARCHAR[])," +
             "CAST(:facultyList AS VARCHAR[])," +
             "CAST(:articleList AS article_types[])," +

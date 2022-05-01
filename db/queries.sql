@@ -237,8 +237,8 @@ FROM find_teachers('{}',
 -- защитивших сотрудниками указанной кафедры либо указанного факультета.
 --
 
-DROP FUNCTION find_articles;
-CREATE OR REPLACE FUNCTION find_articles(
+DROP FUNCTION find_teacher_articles;
+CREATE OR REPLACE FUNCTION find_teacher_articles(
     departmentList VARCHAR[],
     facultyList VARCHAR[],
     articleList article_types[],
@@ -246,6 +246,7 @@ CREATE OR REPLACE FUNCTION find_articles(
     RETURNS TABLE
             (
                 id             INTEGER,
+                teacherId      INTEGER,
                 secondName     VARCHAR,
                 firstName      VARCHAR,
                 lastName       VARCHAR,
@@ -259,7 +260,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -286,10 +288,10 @@ $$ LANGUAGE plpgsql;
 
 
 SELECT *
-FROM find_articles('{}',
-                   '{}',
-                   '{}',
-                   '{}');
+FROM find_teacher_articles('{}',
+                           '{}',
+                           '{}',
+                           '{}');
 
 --
 -- QUERY 4
@@ -310,6 +312,7 @@ CREATE OR REPLACE FUNCTION find_departments(
     RETURNS TABLE
             (
                 id             INTEGER,
+                departmentId   INTEGER,
                 departmentName VARCHAR,
                 facultyName    VARCHAR,
                 groupNumber    INTEGER,
@@ -321,7 +324,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT d.id,
+        SELECT row_number() over (ORDER BY d.id)::INTEGER,
+               d.id,
                d.department_name,
                f.faculty_name,
                g.group_number,
@@ -376,6 +380,7 @@ CREATE OR REPLACE FUNCTION find_teacher_groups(
     RETURNS TABLE
             (
                 id             INTEGER,
+                teacherId      INTEGER,
                 secondName     VARCHAR,
                 firstName      VARCHAR,
                 lastName       VARCHAR,
@@ -389,7 +394,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -447,6 +453,7 @@ CREATE OR REPLACE FUNCTION find_teacher_classes(
     RETURNS TABLE
             (
                 id             INTEGER,
+                teacherId      INTEGER,
                 secondName     VARCHAR,
                 firstName      VARCHAR,
                 lastName       VARCHAR,
@@ -463,7 +470,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -655,6 +663,7 @@ CREATE OR REPLACE FUNCTION find_teacher_exams(
     RETURNS TABLE
             (
                 id             INTEGER,
+                teacherId      INTEGER,
                 secondName     VARCHAR,
                 firstName      VARCHAR,
                 lastName       VARCHAR,
@@ -671,7 +680,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -869,6 +879,7 @@ CREATE OR REPLACE FUNCTION find_teacher_diplomas(
     RETURNS TABLE
             (
                 id             INTEGER,
+                teacherId      INTEGER,
                 secondName     VARCHAR,
                 firstName      VARCHAR,
                 lastName       VARCHAR,
@@ -882,7 +893,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,

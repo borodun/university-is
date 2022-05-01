@@ -11,24 +11,22 @@ function valuetext(value) {
     return `${value}°C`;
 }
 
-export default function StudentQuery() {
+export default function TeacherClassesQuery() {
     const [data, setData] = React.useState({
         rows: [{id: 1}],
-        columns: [{field: "id", headerName: "Id", hide: true}]
+        columns: [{field: "id", headerName: "id", hide: true}]
     });
 
+    const [classTypes, setClassTypes] = React.useState([])
     const [groupList, setGroupList] = React.useState([])
     const [courseList, setCourseList] = React.useState([])
+    const [departmentList, setDepartmentList] = React.useState([])
     const [facultyList, setFacultyList] = React.useState([])
-    const [genderList, setGenderList] = React.useState('')
-    const [yearList, setYearList] = React.useState([1990, 2010])
-    const [ageList, setAgeList] = React.useState([18, 30])
-    const [kidsCheck, setKidsCheck] = React.useState(-1)
-    const [scholarshipCheck, setScholarshipCheck] = React.useState(-1)
-    const [scholarshipInterval, setScholarshipInterval] = React.useState([1000, 20000])
+    const [yearList, setYearList] = React.useState([2019, 2021])
+    const [semesterList, setSemesterList] = React.useState('')
 
     const getData = (urlParams) => {
-        getTable(`/students/find`, urlParams, data, setData)
+        getTable(`/teachers/find-classes`, urlParams, data, setData)
     }
 
     /* eslint-disable react-hooks/exhaustive-deps */
@@ -44,40 +42,49 @@ export default function StudentQuery() {
         e.preventDefault();
 
         let urlParams = {
+            classTypes: addBraces(classTypes),
             groupList: addBraces(groupList),
             courseList: addBraces(courseList),
+            departmentList: addBraces(departmentList),
             facultyList: addBraces(facultyList),
-            genderList: addBraces(genderList),
             yearList: addBraces(yearList),
-            ageList: addBraces(ageList),
-            kidsCheck: kidsCheck,
-            scholarshipCheck: scholarshipCheck,
-            scholarshipInterval: addBraces(scholarshipInterval)
+            semesterList: addBraces(semesterList),
         }
 
         console.log(urlParams)
         getData(urlParams)
     }
 
+    const classes = [
+        'lection',
+        'seminar',
+        'laboratory_work',
+        'course_work',
+        'consultation'
+    ]
     const groups = [19205, 18301, 21705, 20132];
     const courses = [1, 2, 3, 4];
+    const departments = [
+        "Department of Computer Technologies",
+        "Department of Discrete Analysis and Operations Research",
+        "Department of Informatics Systems",
+        "Department of General Informatics",
+        "Department of Math",
+        "Department of General Physics"
+    ]
     const faculties = [
         "Faculty of Information Technologies",
         "Faculty of Physics",
         "Faculty of Economics",
         "Faculty of Mathematics and Mechanics"
     ]
-
-    const values = [-1, 0, 1];
-    const labels = ["Irrelevant", "No", "Yes"];
-
-    const genderValues = ['', 'male', 'female'];
-    const genderLabels = ['Irrelevant', 'Male', 'Female'];
+    const values = ['', '1', '2'];
+    const labels = ["Irrelevant", "Autumn", "Spring"];
 
     return (
         <Box>
             <Typography variant="h4" noWrap component="div" style={{fontWeight: 300}}>
-                Students
+                Teacher Classes
             </Typography>
             <Box sx={{display: 'flex'}}>
                 <AntGrid data={data}/>
@@ -91,6 +98,13 @@ export default function StudentQuery() {
                         <Box sx={{textAlign: 'center'}}>
                             <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                                 <Stack spacing={1} sx={{width: 300}}>
+
+                                    <ChipSelect
+                                        label="Classes"
+                                        list={classTypes}
+                                        setList={setClassTypes}
+                                        array={classes}
+                                    />
 
                                     <ChipSelect
                                         label="Groups"
@@ -107,26 +121,24 @@ export default function StudentQuery() {
                                     />
 
                                     <ChipSelect
+                                        label="Departments"
+                                        list={departmentList}
+                                        setList={setDepartmentList}
+                                        array={departments}
+                                    />
+
+                                    <ChipSelect
                                         label="Faculties"
                                         list={facultyList}
                                         setList={setFacultyList}
                                         array={faculties}
                                     />
 
-                                    <RadioButtonSelect
-                                        id="genders"
-                                        label="Genders"
-                                        value={genderList}
-                                        setValue={setGenderList}
-                                        values={genderValues}
-                                        labels={genderLabels}
-                                    />
-
-                                    <FormLabel id="yearInterval">Year of birth range</FormLabel>
+                                    <FormLabel id="ageInterval">Study years range</FormLabel>
                                     <Slider
-                                        min={1980}
-                                        max={2010}
-                                        getAriaLabel={() => 'Year of birth range'}
+                                        min={2018}
+                                        max={2022}
+                                        getAriaLabel={() => 'Age range'}
                                         value={yearList}
                                         onChange={(e) => {
                                             setYearList(e.target.value)
@@ -135,49 +147,13 @@ export default function StudentQuery() {
                                         getAriaValueText={valuetext}
                                     />
 
-                                    <FormLabel id="ageInterval">Age range</FormLabel>
-                                    <Slider
-                                        min={10}
-                                        max={40}
-                                        getAriaLabel={() => 'Age range'}
-                                        value={ageList}
-                                        onChange={(e) => {
-                                            setAgeList(e.target.value)
-                                        }}
-                                        valueLabelDisplay="auto"
-                                        getAriaValueText={valuetext}
-                                    />
-
                                     <RadioButtonSelect
-                                        id="kidsCheck"
-                                        label="Kids"
-                                        value={kidsCheck}
-                                        setValue={setKidsCheck}
+                                        id="semester"
+                                        label="Semester"
+                                        value={semesterList}
+                                        setValue={setSemesterList}
                                         values={values}
                                         labels={labels}
-                                    />
-
-                                    <RadioButtonSelect
-                                        id="scholarshipCheck"
-                                        label="Scholarship"
-                                        value={scholarshipCheck}
-                                        setValue={setScholarshipCheck}
-                                        values={values}
-                                        labels={labels}
-                                    />
-
-                                    <FormLabel id="scholarshipInterval">Scholarship range</FormLabel>
-                                    <Slider
-                                        min={0}
-                                        max={50000}
-                                        getAriaLabel={() => 'Scholarship range'}
-                                        value={scholarshipInterval}
-                                        onChange={(e) => {
-                                            setScholarshipInterval(e.target.value)
-                                        }}
-                                        valueLabelDisplay="auto"
-                                        getAriaValueText={valuetext}
-                                        disabled={scholarshipCheck <= 0}
                                     />
 
                                     <Button variant="contained" onClick={handleSubmit}>Apply</Button>

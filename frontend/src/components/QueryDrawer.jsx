@@ -13,7 +13,22 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 
 import PersonIcon from '@mui/icons-material/Person';
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
+import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
+
 import StudentQuery from "./queries/StudentQuery";
+import StudentSessionsQuery from "./queries/StudentSessionsQuery";
+import StudentMarksQuery from "./queries/StudentMarksQuery";
+import StudentExamsQuery from "./queries/StudentExamsQuery";
+import StudentDiplomasQuery from "./queries/StudentDiplomasQuery";
+import DepartmentQuery from "./queries/DepartmentQuery";
+import TeacherQuery from "./queries/TeacherQuery";
+import TeacherWorkloadsQuery from "./queries/TeacherWorkloadsQuery";
+import TeacherGroupsQuery from "./queries/TeacherGroupsQuery";
+import TeacherExamsQuery from "./queries/TeacherExamsQuery";
+import TeacherDiplomasQuery from "./queries/TeacherDiplomasQuery";
+import TeacherClassesQuery from "./queries/TeacherClassesQuery";
+import TeacherArticlesQuery from "./queries/TeacherArticlesQuery";
 
 const drawerWidth = 250;
 
@@ -69,7 +84,19 @@ export default function QueryDrawer() {
     const [queryName, setQueryName] = React.useState('Students');
 
     const elements = {
-        Students: {icon: <PersonIcon/>, query: <StudentQuery query={queryName}/>}
+        Students: {icon: <PersonIcon/>, query: <StudentQuery/>},
+        "Student Sessions": {icon: <PersonIcon/>, query: <StudentSessionsQuery/>},
+        "Student Marks": {icon: <PersonIcon/>, query: <StudentMarksQuery/>},
+        "Student Exams": {icon: <PersonIcon/>, query: <StudentExamsQuery/>},
+        "Student Diplomas": {icon: <PersonIcon/>, query: <StudentDiplomasQuery/>},
+        Departments: {icon: <MeetingRoomIcon/>, query: <DepartmentQuery/>},
+        Teachers: {icon: <SelfImprovementIcon/>, query: <TeacherQuery/>},
+        "Teachers Workloads": {icon: <SelfImprovementIcon/>, query: <TeacherWorkloadsQuery/>},
+        "Teachers Groups": {icon: <SelfImprovementIcon/>, query: <TeacherGroupsQuery/>},
+        "Teachers Exams": {icon: <SelfImprovementIcon/>, query: <TeacherExamsQuery/>},
+        "Teachers Diplomas": {icon: <SelfImprovementIcon/>, query: <TeacherDiplomasQuery/>},
+        "Teachers Classes": {icon: <SelfImprovementIcon/>, query: <TeacherClassesQuery/>},
+        "Teachers Articels": {icon: <SelfImprovementIcon/>, query: <TeacherArticlesQuery/>},
     }
 
     const getQueryNames = () => {

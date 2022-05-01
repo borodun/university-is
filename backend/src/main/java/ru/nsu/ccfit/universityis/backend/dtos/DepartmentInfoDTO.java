@@ -1,7 +1,9 @@
 package ru.nsu.ccfit.universityis.backend.dtos;
 
 public interface DepartmentInfoDTO {
+
     Integer getId();
+    Integer getDepartmentId();
 
     String getDepartmentName();
 

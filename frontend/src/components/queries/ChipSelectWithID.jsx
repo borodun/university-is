@@ -22,7 +22,15 @@ function getStyles(el, array, theme) {
     };
 }
 
-export default function ChipSelect(props) {
+function search(id, array) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].id === id) {
+            return array[i].value;
+        }
+    }
+}
+
+export default function ChipSelectWithID(props) {
     const {id, label, list, setList, array, ...other} = props;
 
     const theme = useTheme();
@@ -42,8 +50,8 @@ export default function ChipSelect(props) {
                 input={<OutlinedInput id={label} label={label}/>}
                 renderValue={(selected) => (
                     <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.5}}>
-                        {selected.map((value) => (
-                            <Chip key={value} label={value}/>
+                        {selected.map((ID) => (
+                            <Chip key={ID} label={search(ID, array)}/>
                         ))}
                     </Box>
                 )}
@@ -51,11 +59,11 @@ export default function ChipSelect(props) {
             >
                 {array.map((el) => (
                     <MenuItem
-                        key={el}
-                        value={el}
-                        style={getStyles(el, list, theme)}
+                        key={el.id}
+                        value={el.id}
+                        style={getStyles(el.id, list, theme)}
                     >
-                        {el}
+                        {el.value}
                     </MenuItem>
                 ))}
             </Select>

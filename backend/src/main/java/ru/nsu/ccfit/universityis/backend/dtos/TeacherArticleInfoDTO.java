@@ -5,7 +5,9 @@ import ru.nsu.ccfit.universityis.backend.types.ArticleTypes;
 import java.time.LocalDate;
 
 public interface TeacherArticleInfoDTO {
+
     Integer getId();
+    Integer getTeacherId();
 
     String getSecondName();
 

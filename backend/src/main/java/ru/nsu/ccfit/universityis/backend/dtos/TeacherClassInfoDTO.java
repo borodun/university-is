@@ -3,7 +3,9 @@ package ru.nsu.ccfit.universityis.backend.dtos;
 import ru.nsu.ccfit.universityis.backend.types.ClassTypes;
 
 public interface TeacherClassInfoDTO {
+
     Integer getId();
+    Integer getTeacherId();
 
     String getSecondName();
 
