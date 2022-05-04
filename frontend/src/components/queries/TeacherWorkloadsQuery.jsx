@@ -18,7 +18,7 @@ export default function TeacherWorkloadsQuery() {
     const [classTypes, setClassTypes] = React.useState([])
 
     const getData = (urlParams) => {
-        getTable('teacher/find-workloads', urlParams, data, setData);
+        getTable('teachers/find-workloads', urlParams, data, setData);
     }
 
     /* eslint-disable react-hooks/exhaustive-deps */

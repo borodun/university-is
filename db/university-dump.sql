@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 13.6
+-- Dumped by pg_dump version 14.2
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -166,55 +166,6 @@ $_$;
 
 
 --
--- Name: find_articles(character varying[], character varying[], university.article_types[], date[]); Type: FUNCTION; Schema: university; Owner: -
---
-
-CREATE FUNCTION university.find_articles(departmentlist character varying[], facultylist character varying[],
-                                         articlelist university.article_types[], articledateinterval date[])
-    RETURNS TABLE
-            (
-                id             integer,
-                secondname     character varying,
-                firstname      character varying,
-                lastname       character varying,
-                departmentname character varying,
-                facultyname    character varying,
-                articletitle   character varying,
-                articletype    university.article_types,
-                defenddate     date
-            )
-    LANGUAGE plpgsql
-AS
-$$
-BEGIN
-    RETURN QUERY
-        SELECT p.id,
-               p.second_name,
-               p.first_name,
-               p.last_name,
-               d.department_name,
-               f.faculty_name,
-               dd.article_title,
-               dd.article_type,
-               dd.defend_date
-        FROM teachers t
-                 INNER JOIN departments d on d.id = t.department_id
-                 INNER JOIN faculties f on f.id = d.faculty_id
-                 INNER JOIN persons p on p.id = t.id
-                 INNER JOIN defended_degrees dd on p.id = dd.person_id
-        WHERE ((cardinality(departmentList) != 0 AND d.department_name = ANY (departmentList)) OR
-               cardinality(departmentList) = 0)
-          AND ((cardinality(facultyList) != 0 AND f.faculty_name = ANY (facultyList)) OR cardinality(facultyList) = 0)
-          AND ((cardinality(articleList) != 0 AND dd.article_type = ANY (articleList)) OR cardinality(articleList) = 0)
-          AND ((cardinality(articleDateInterval) != 0 AND
-                dd.defend_date BETWEEN array_min(articleDateInterval) AND array_max(articleDateInterval)) OR
-               cardinality(articleDateInterval) = 0)
-        ORDER BY p.id;
-END;
-$$;
-
-
---
 -- Name: find_departments(integer[], integer[], character varying[], character varying[], integer[], integer[]); Type: FUNCTION; Schema: university; Owner: -
 --
 
@@ -224,6 +175,7 @@ CREATE FUNCTION university.find_departments(grouplist integer[], courselist inte
     RETURNS TABLE
             (
                 id             integer,
+                departmentid   integer,
                 departmentname character varying,
                 facultyname    character varying,
                 groupnumber    integer,
@@ -236,7 +188,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT d.id,
+        SELECT row_number() over (ORDER BY d.id)::INTEGER,
+               d.id,
                d.department_name,
                f.faculty_name,
                g.group_number,
@@ -244,12 +197,12 @@ BEGIN
                curr.year,
                curr.semester
         FROM departments d
-                 INNER JOIN faculties f on f.id = d.faculty_id
-                 INNER JOIN study_assignments sa on d.id = sa.department_id
-                 INNER JOIN classes c on sa.disciple_id = c.disciple_id
-                 INNER JOIN groups g on g.id = c.group_id
-                 INNER JOIN courses cour on cour.id = g.course_id
-                 INNER JOIN curriculum curr on c.disciple_id = curr.disciple_id
+                 INNER JOIN faculties f ON f.id = d.faculty_id
+                 INNER JOIN study_assignments sa ON d.id = sa.department_id
+                 INNER JOIN classes c ON sa.disciple_id = c.disciple_id
+                 INNER JOIN groups g ON g.id = c.group_id
+                 INNER JOIN courses cour ON cour.id = g.course_id
+                 INNER JOIN curriculum curr ON c.disciple_id = curr.disciple_id
         WHERE ((cardinality(groupList) != 0 AND g.group_number = ANY (groupList)) OR cardinality(groupList) = 0)
           AND ((cardinality(courseList) != 0 AND cour.course_number = ANY (courseList)) OR cardinality(courseList) = 0)
           AND ((cardinality(departmentList) != 0 AND d.department_name = ANY (departmentList)) OR
@@ -555,9 +508,60 @@ BEGIN
           AND ((scholarshipCheck != -1 AND
                 (scholarshipCheck = 1 AND s.scholarship IS NOT NULL OR
                  scholarshipCheck = 0 AND s.scholarship IS NULL)) OR scholarshipCheck = -1)
-          AND ((cardinality(scholarshipInterval) != 0 AND
-                s.scholarship BETWEEN array_min(scholarshipInterval) AND array_max(scholarshipInterval)) OR
-               cardinality(scholarshipInterval) = 0)
+          AND ((cardinality(scholarshipInterval) != 0 AND scholarshipCheck = 1 AND
+                s.scholarship BETWEEN array_min(scholarshipInterval) AND array_max(scholarshipInterval)
+            OR scholarshipCheck != 1) OR cardinality(scholarshipInterval) = 0)
+        ORDER BY p.id;
+END;
+$$;
+
+
+--
+-- Name: find_teacher_articles(character varying[], character varying[], university.article_types[], date[]); Type: FUNCTION; Schema: university; Owner: -
+--
+
+CREATE FUNCTION university.find_teacher_articles(departmentlist character varying[], facultylist character varying[],
+                                                 articlelist university.article_types[], articledateinterval date[])
+    RETURNS TABLE
+            (
+                id             integer,
+                teacherid      integer,
+                secondname     character varying,
+                firstname      character varying,
+                lastname       character varying,
+                departmentname character varying,
+                facultyname    character varying,
+                articletitle   character varying,
+                articletype    university.article_types,
+                defenddate     date
+            )
+    LANGUAGE plpgsql
+AS
+$$
+BEGIN
+    RETURN QUERY
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
+               p.second_name,
+               p.first_name,
+               p.last_name,
+               d.department_name,
+               f.faculty_name,
+               dd.article_title,
+               dd.article_type,
+               dd.defend_date
+        FROM teachers t
+                 INNER JOIN departments d ON d.id = t.department_id
+                 INNER JOIN faculties f ON f.id = d.faculty_id
+                 INNER JOIN persons p ON p.id = t.id
+                 INNER JOIN defended_degrees dd ON p.id = dd.person_id
+        WHERE ((cardinality(departmentList) != 0 AND d.department_name = ANY (departmentList)) OR
+               cardinality(departmentList) = 0)
+          AND ((cardinality(facultyList) != 0 AND f.faculty_name = ANY (facultyList)) OR cardinality(facultyList) = 0)
+          AND ((cardinality(articleList) != 0 AND dd.article_type = ANY (articleList)) OR cardinality(articleList) = 0)
+          AND ((cardinality(articleDateInterval) != 0 AND
+                dd.defend_date BETWEEN array_min(articleDateInterval) AND array_max(articleDateInterval)) OR
+               cardinality(articleDateInterval) = 0)
         ORDER BY p.id;
 END;
 $$;
@@ -574,6 +578,7 @@ CREATE FUNCTION university.find_teacher_classes(classtypes university.class_type
     RETURNS TABLE
             (
                 id             integer,
+                teacherid      integer,
                 secondname     character varying,
                 firstname      character varying,
                 lastname       character varying,
@@ -591,7 +596,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -637,6 +643,7 @@ CREATE FUNCTION university.find_teacher_diplomas(departmentlist character varyin
     RETURNS TABLE
             (
                 id             integer,
+                teacherid      integer,
                 secondname     character varying,
                 firstname      character varying,
                 lastname       character varying,
@@ -651,7 +658,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -661,10 +669,10 @@ BEGIN
                s.diploma_title,
                person_name(s.id)
         FROM teachers t
-                 INNER JOIN students s on t.id = s.scientific_director
-                 INNER JOIN departments d on d.id = t.department_id
-                 INNER JOIN faculties f on f.id = d.faculty_id
-                 INNER JOIN persons p on p.id = t.id
+                 INNER JOIN students s ON t.id = s.scientific_director
+                 INNER JOIN departments d ON d.id = t.department_id
+                 INNER JOIN faculties f ON f.id = d.faculty_id
+                 INNER JOIN persons p ON p.id = t.id
         WHERE ((cardinality(departmentList) != 0 AND d.department_name = ANY (departmentList)) OR
                cardinality(departmentList) = 0)
           AND ((cardinality(facultyList) != 0 AND f.faculty_name = ANY (facultyList)) OR cardinality(facultyList) = 0)
@@ -686,6 +694,7 @@ CREATE FUNCTION university.find_teacher_exams(grouplist integer[], disciplelist 
     RETURNS TABLE
             (
                 id             integer,
+                teacherid      integer,
                 secondname     character varying,
                 firstname      character varying,
                 lastname       character varying,
@@ -703,7 +712,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -716,16 +726,16 @@ BEGIN
                c.year,
                c.semester
         FROM teachers t
-                 INNER JOIN teacher_exams te on t.id = te.teacher_id
-                 INNER JOIN exams e on e.id = te.exam_id
-                 INNER JOIN disciples d on d.id = e.disciple_id
-                 INNER JOIN curriculum c on d.id = c.disciple_id
-                 INNER JOIN courses cour on cour.id = c.course_id
-                 INNER JOIN groups g on cour.id = g.course_id
-                 INNER JOIN departments dep on dep.id = t.department_id
-                 INNER JOIN faculties f on f.id = dep.faculty_id
-                 INNER JOIN persons p on p.id = t.id
-                 INNER JOIN exam_assignments ea on d.id = ea.disciple_id
+                 INNER JOIN teacher_exams te ON t.id = te.teacher_id
+                 INNER JOIN exams e ON e.id = te.exam_id
+                 INNER JOIN disciples d ON d.id = e.disciple_id
+                 INNER JOIN curriculum c ON d.id = c.disciple_id
+                 INNER JOIN courses cour ON cour.id = c.course_id
+                 INNER JOIN groups g ON cour.id = g.course_id
+                 INNER JOIN departments dep ON dep.id = t.department_id
+                 INNER JOIN faculties f ON f.id = dep.faculty_id
+                 INNER JOIN persons p ON p.id = t.id
+                 INNER JOIN exam_assignments ea ON d.id = ea.disciple_id
         WHERE ((cardinality(groupList) != 0 AND g.group_number = ANY (groupList)) OR cardinality(groupList) = 0)
           AND ((cardinality(discipleList) != 0 AND d.disciple_name = ANY (discipleList)) OR
                cardinality(discipleList) = 0)
@@ -747,6 +757,7 @@ CREATE FUNCTION university.find_teacher_groups(disciplelist character varying[],
     RETURNS TABLE
             (
                 id             integer,
+                teacherid      integer,
                 secondname     character varying,
                 firstname      character varying,
                 lastname       character varying,
@@ -761,7 +772,8 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        SELECT p.id,
+        SELECT row_number() over (ORDER BY p.id)::INTEGER,
+               p.id,
                p.second_name,
                p.first_name,
                p.last_name,
@@ -2161,13 +2173,13 @@ VALUES (14, 12, 42, 'unsatisfactory', 2, 25);
 INSERT INTO university.passes (id, exam_id, student_id, mark, mark_num, teacher_id)
 VALUES (13, 11, 41, 'pass', NULL, 19);
 INSERT INTO university.passes (id, exam_id, student_id, mark, mark_num, teacher_id)
-VALUES (18, 16, 46, 'excellent', NULL, 18);
+VALUES (11, 1, 11, 'pass', NULL, 13);
 INSERT INTO university.passes (id, exam_id, student_id, mark, mark_num, teacher_id)
-VALUES (10, 6, 10, 'good', NULL, 19);
+VALUES (16, 14, 44, 'satisfactory', 3, 22);
 INSERT INTO university.passes (id, exam_id, student_id, mark, mark_num, teacher_id)
-VALUES (16, 14, 44, 'satisfactory', NULL, 22);
+VALUES (18, 16, 46, 'excellent', 5, 18);
 INSERT INTO university.passes (id, exam_id, student_id, mark, mark_num, teacher_id)
-VALUES (11, 1, 11, 'pass', 4, 13);
+VALUES (10, 6, 10, 'good', 4, 19);
 
 
 --
@@ -2257,11 +2269,11 @@ VALUES (46, 'Maria', 'Tregub', 'Sergeevna', 'female', '2003-05-13', NULL);
 --
 
 INSERT INTO university.sessions (id, session_date, name)
-VALUES (3, '2021-01-07', NULL);
+VALUES (2, '2022-06-05', '2022-06-05');
 INSERT INTO university.sessions (id, session_date, name)
-VALUES (2, '2022-06-05', NULL);
+VALUES (3, '2021-01-07', '2021-01-07');
 INSERT INTO university.sessions (id, session_date, name)
-VALUES (4, '2020-06-06', NULL);
+VALUES (4, '2020-06-06', '2020-06-06');
 
 
 --
